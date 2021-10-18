@@ -24,7 +24,7 @@ var wsupgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func WsHandler(w http.ResponseWriter, r *http.Request) {
+func WsHandler(w http.ResponseWriter, r *http.Request, pWS *WS) {
 	conn, err := wsupgrader.Upgrade(w, r, nil)
 	if err != nil {
 		fmt.Printf("Failed to set websocket upgrade: %s", err.Error())
@@ -32,12 +32,18 @@ func WsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for {
-		t, msg, err := conn.ReadMessage()
+		//t, msg, err := conn.ReadMessage()
+		t, _, err := conn.ReadMessage()
 		if err != nil {
 			break
 		}
-		if err = conn.WriteMessage(t, msg); err != nil {
-			fmt.Printf("Errror: %s", err.Error())
+		updates := pWS.GetChannel()
+		for update := range updates {
+			upd, err := json.Marshal(update)
+			if err != nil {
+				break
+			}
+			conn.WriteMessage(t, []byte(upd))
 		}
 	}
 }

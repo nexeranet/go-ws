@@ -29,7 +29,7 @@ func main() {
 	fmt.Println(handler)
 	srv := new(go_ws.Server)
 	fmt.Printf("%v", srv)
-	err = srv.Run("8080", handler.InitRouter())
+	err = srv.Run("8080", handler.InitRouter(WS))
 	if err != nil {
 		log.Fatalf("Error: %s", err.Error())
 	}
