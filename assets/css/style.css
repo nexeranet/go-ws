@@ -1,0 +1,25 @@
+#subs, #unsubs{
+  border: none;
+  background: blue;
+  color: white;
+  margin: 5px 10px;
+  padding: 10px 20px;
+  font-size: 21px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#list div {
+  border-bottom: 1px gray solid;
+  padding: 10px;
+}
+#list span {
+  padding: 5px;
+}
+#list .symbol{
+  background-color:burlywood;
+}
+#list .price{
+  font-size: 20px;
+  font-weight: bold;
+}

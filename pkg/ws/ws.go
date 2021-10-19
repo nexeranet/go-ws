@@ -19,33 +19,17 @@ const (
 	ENDPOINT = "/realtime"
 )
 
-var wsupgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-}
-
-func WsHandler(w http.ResponseWriter, r *http.Request, pWS *WS) {
-	conn, err := wsupgrader.Upgrade(w, r, nil)
+func WsHandler(w http.ResponseWriter, r *http.Request, pWS *WS, hub *Hub) {
+	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		fmt.Printf("Failed to set websocket upgrade: %s", err.Error())
+		log.Println(err)
 		return
 	}
+	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256)}
+	client.hub.register <- client
 
-	for {
-		//t, msg, err := conn.ReadMessage()
-		t, _, err := conn.ReadMessage()
-		if err != nil {
-			break
-		}
-		updates := pWS.GetChannel()
-		for update := range updates {
-			upd, err := json.Marshal(update)
-			if err != nil {
-				break
-			}
-			conn.WriteMessage(t, []byte(upd))
-		}
-	}
+	go client.writePump(pWS)
+	go client.readPump()
 }
 
 func createSignature(api_secret, verb, endpoint string, exp int64) string {
@@ -126,6 +110,7 @@ func (obj *WS) Start() error {
 				return
 			}
 			var msg Update
+			//log.Printf("Message: %s, $$$$$$$$$$$$$$$$$$$$$$$$$$\n", message)
 			err = json.Unmarshal([]byte(message), &msg)
 			if err != nil {
 				log.Println("Can't Unmarshal", err)

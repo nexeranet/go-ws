@@ -29,10 +29,22 @@ type CommandMessage struct {
 type Data struct {
 	Symbol    string  `json:"symbol"`
 	MarkPrice float64 `json:"markPrice"`
+	Timestamp string  `json:"timestamp"`
 }
 
 type Update struct {
 	Table  string `json:"table"`
 	Action string `json:"action"`
 	Data   []Data `json:"data"`
+}
+
+type ClientMessage struct {
+	Action  string   `json:"action"`
+	Symbols []string `json:"symbols,"`
+}
+
+type UpdateClientMessage struct {
+	Timestamp string  `json:"timestamp"`
+	Symbol    string  `json:"symbol"`
+	Price     float64 `json:"price"`
 }

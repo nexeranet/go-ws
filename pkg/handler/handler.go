@@ -14,7 +14,7 @@ func NewHandler() *Handler {
 	return &Handler{}
 }
 
-func (*Handler) InitRouter(pWS *ws.WS) *gin.Engine {
+func (*Handler) InitRouter(pWS *ws.WS, hub *ws.Hub) *gin.Engine {
 	router := gin.New()
 	router.Static("/assets", "./assets")
 	router.LoadHTMLGlob("templates/*.tmpl")
@@ -24,7 +24,7 @@ func (*Handler) InitRouter(pWS *ws.WS) *gin.Engine {
 		})
 	})
 	router.GET("/ws", func(c *gin.Context) {
-		ws.WsHandler(c.Writer, c.Request, pWS)
+		ws.WsHandler(c.Writer, c.Request, pWS, hub)
 	})
 	return router
 }

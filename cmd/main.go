@@ -24,12 +24,14 @@ func main() {
 	}
 
 	defer WS.Close()
+	hub := ws.NewHub()
+	go hub.Run()
 
 	handler := handler.NewHandler()
 	fmt.Println(handler)
 	srv := new(go_ws.Server)
 	fmt.Printf("%v", srv)
-	err = srv.Run("8080", handler.InitRouter(WS))
+	err = srv.Run("8080", handler.InitRouter(WS, hub))
 	if err != nil {
 		log.Fatalf("Error: %s", err.Error())
 	}
